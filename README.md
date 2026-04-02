@@ -219,6 +219,8 @@ There are several datasets that are prescribed for you to use in this part. Belo
 
     **Description:**
 
+    My metric is the **ratio of wheelchair-accessible stops to all stops with a known accessibility status** within each neighborhood. Specifically, I count stops where `wheelchair_boarding = 1` as accessible and `wheelchair_boarding = 2` as inaccessible. Stops with `wheelchair_boarding = 0` (unknown) are excluded from both the numerator and denominator, since they carry no information. The metric ranges from 0.0 (no accessible stops) to 1.0 (all stops accessible). Neighborhoods with no stops that have a known status are excluded entirely. This approach rewards neighborhoods that have genuinely confirmed accessible infrastructure rather than penalizing unknown-status stops, which could simply reflect data gaps rather than true inaccessibility.
+
 6.  What are the _top five_ neighborhoods according to your accessibility metric?
 
 7.  What are the _bottom five_ neighborhoods according to your accessibility metric?
@@ -243,6 +245,8 @@ There are several datasets that are prescribed for you to use in this part. Belo
     ```
 
     **Discussion:**
+
+    I used the **`phl.pwd_parcels`** dataset to define Penn's campus boundary. I filtered parcels where `owner1` contains `'UNIVERSITY OF PENNSYLVANIA'` and dissolved them into a single polygon using `ST_Union`. This approach captures the actual land parcels owned by Penn rather than relying on a drawn boundary, making it more precise and reproducible from existing data. A block group is counted only if it is **fully contained** (`ST_Within`) within the dissolved campus polygon.
 
 9. With a query involving PWD parcels and census block groups, find the `geo_id` of the block group that contains Meyerson Hall. `ST_MakePoint()` and functions like that are not allowed.
 
