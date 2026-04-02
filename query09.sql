@@ -6,8 +6,7 @@
   in the phl.pwd_parcels dataset and use that parcel's geometry.
 */
 
-select
-    bg.geoid as geo_id
+select bg.geoid as geo_id
 from census.blockgroups_2020 as bg
 inner join phl.pwd_parcels as p
     on st_within(p.geog::geometry, bg.geog::geometry)
