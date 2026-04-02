@@ -6,8 +6,7 @@
 */
 
 with penn_campus as (
-    select
-        st_convexhull(st_union(geog::geometry)) as campus_geom
+    select st_convexhull(st_union(geog::geometry)) as campus_geom
     from phl.pwd_parcels
     where
         upper(owner1) like '%TRUSTEES%'
@@ -17,7 +16,6 @@ with penn_campus as (
         )
 )
 
-select
-    count(*)::integer as count_block_groups
+select count(*)::integer as count_block_groups
 from census.blockgroups_2020 as bg, penn_campus
 where st_within(bg.geog::geometry, penn_campus.campus_geom)
