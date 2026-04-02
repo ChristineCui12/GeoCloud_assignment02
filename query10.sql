@@ -1,7 +1,7 @@
 /*
   Build a descriptive stop_desc for each rail stop using PostGIS spatial functions.
 
-  For each rail stop, find the nearest PWD parcel centroid and describe the
+  For each rail stop, find the nearest PWD parcel and describe the
   stop's direction and distance from that parcel address.
 
   Direction is derived from ST_Azimuth, converted to a compass bearing string.
@@ -9,9 +9,8 @@
 
 with rail_stop_geog as (
     select
-        stop_id,
+        stop_id::integer as stop_id,
         stop_name,
-        stop_desc,
         stop_lon,
         stop_lat,
         st_makepoint(stop_lon, stop_lat)::geography as geog
@@ -22,7 +21,6 @@ nearest_parcel as (
     select
         r.stop_id,
         r.stop_name,
-        r.stop_desc,
         r.stop_lon,
         r.stop_lat,
         r.geog as stop_geog,
@@ -40,18 +38,19 @@ nearest_parcel as (
 )
 
 select
-    stop_id::integer,
+    stop_id,
     stop_name,
-    round(st_distance(stop_geog, parcel_geog)) || ' meters ' ||
-    case
+    round(st_distance(stop_geog, parcel_geog))
+    || ' meters '
+    || case
         when degrees(st_azimuth(
             st_centroid(parcel_geog::geometry),
             stop_geog::geometry
-        )) < 22.5  then 'N'
+        )) < 22.5 then 'N'
         when degrees(st_azimuth(
             st_centroid(parcel_geog::geometry),
             stop_geog::geometry
-        )) < 67.5  then 'NE'
+        )) < 67.5 then 'NE'
         when degrees(st_azimuth(
             st_centroid(parcel_geog::geometry),
             stop_geog::geometry
@@ -77,7 +76,8 @@ select
             stop_geog::geometry
         )) < 337.5 then 'NW'
         else 'N'
-    end || ' of ' || initcap(parcel_address) as stop_desc,
+    end
+    || ' of ' || initcap(parcel_address) as stop_desc,
     stop_lon,
     stop_lat
 from nearest_parcel
