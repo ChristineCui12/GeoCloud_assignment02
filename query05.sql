@@ -13,6 +13,8 @@
 
 select
     n.name as neighborhood_name,
+    sum(case when s.wheelchair_boarding = 1 then 1 else 0 end)::integer as num_bus_stops_accessible,
+    sum(case when s.wheelchair_boarding = 2 then 1 else 0 end)::integer as num_bus_stops_inaccessible,
     round(
         sum(case when s.wheelchair_boarding = 1 then 1 else 0 end)::numeric
         / nullif(
@@ -20,9 +22,7 @@ select
             0
         ),
         4
-    ) as accessibility_metric,
-    sum(case when s.wheelchair_boarding = 1 then 1 else 0 end)::integer as num_bus_stops_accessible,
-    sum(case when s.wheelchair_boarding = 2 then 1 else 0 end)::integer as num_bus_stops_inaccessible
+    ) as accessibility_metric
 from phl.neighborhoods as n
 inner join septa.bus_stops as s
     on st_within(s.geog::geometry, n.geog::geometry)

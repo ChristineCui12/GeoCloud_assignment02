@@ -13,12 +13,13 @@ select
         2
     ) as distance
 from phl.pwd_parcels as parcels
-cross join lateral (
-    select
-        stops.stop_name,
-        stops.geog
-    from septa.bus_stops as stops
-    order by parcels.geog <-> stops.geog
-    limit 1
-) as stops
+cross join
+    lateral (
+        select
+            stops.stop_name,
+            stops.geog
+        from septa.bus_stops as stops
+        order by parcels.geog <-> stops.geog
+        limit 1
+    ) as stops
 order by distance desc
