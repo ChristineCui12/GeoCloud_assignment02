@@ -19,5 +19,5 @@ inner join septa.bus_stops as s
     on st_within(s.geog::geometry, n.geog::geometry)
 group by n.name
 having sum(case when s.wheelchair_boarding in (1, 2) then 1 else 0 end) > 0
-order by accessibility_metric desc
+order by accessibility_metric desc, num_bus_stops_accessible desc
 limit 5
